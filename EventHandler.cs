@@ -31,11 +31,9 @@ namespace SwiftZombies
             RoomName[] names = [
                 RoomName.LczCheckpointA,
                 RoomName.LczCheckpointB,
-                RoomName.LczArmory,
+                RoomName.LczComputerRoom,
                 RoomName.Lcz330,
                 RoomName.Lcz173,
-                RoomName.LczGlassroom,
-                RoomName.LczComputerRoom
             ];
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
