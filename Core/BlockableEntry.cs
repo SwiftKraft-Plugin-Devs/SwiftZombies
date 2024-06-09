@@ -1,7 +1,6 @@
 ﻿using Interactables.Interobjects.DoorUtils;
 using MEC;
 using PlayerRoles;
-using PluginAPI.Core.Doors;
 using SwiftAPI.API.BreakableToys;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,9 +13,13 @@ namespace SwiftZombies.Core
 
         public readonly DoorVariant Door;
 
-        public Vector3 Offset = Vector3.up;
+        public Vector3 Offset = Vector3.up * 0.5f;
 
-        public float BuildTime = 2f;
+        public float BuildTime = 4f;
+
+        public bool Built => built != null;
+
+        BreakableToyBase built;
 
         CoroutineHandle buildRoutine;
 
@@ -28,6 +31,9 @@ namespace SwiftZombies.Core
 
         public void ResetBuild()
         {
+            if (Built)
+                return;
+
             CancelBuild();
 
             buildRoutine = Timing.CallDelayed(BuildTime, Block);
@@ -35,15 +41,19 @@ namespace SwiftZombies.Core
 
         public void CancelBuild()
         {
+            if (Built)
+                return;
+
             if (buildRoutine.IsRunning)
                 Timing.KillCoroutines(buildRoutine);
         }
 
         public void Block()
         {
-            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.Position + Offset, Quaternion.identity, Vector3.one, Color.red);
-            toy.MaxHealth = 200f;
+            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.transform.position + Offset, Quaternion.identity, Vector3.one, Color.red);
+            toy.SetHealth(220f);
             toy.Faction = Faction.FoundationStaff;
+            built = toy;
         }
 
         public static BlockableEntry GetFromDoor(DoorVariant door) => door;
