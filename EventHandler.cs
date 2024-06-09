@@ -32,8 +32,7 @@ namespace SwiftZombies
                 RoomName.LczCheckpointA,
                 RoomName.LczCheckpointB,
                 RoomName.LczComputerRoom,
-                RoomName.Lcz330,
-                RoomName.Lcz173,
+                RoomName.Lcz173
             ];
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
