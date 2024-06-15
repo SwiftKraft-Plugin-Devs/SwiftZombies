@@ -21,6 +21,9 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>$(SCPSLREFERENCES)\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
+    <Reference Include="CommandSystem.Core">
+      <HintPath>..\..\..\..\..\..\..\SCP_DLLS\CommandSystem.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Mirror">
       <HintPath>$(SCPSLREFERENCES)\Mirror-Publicized.dll</HintPath>
     </Reference>

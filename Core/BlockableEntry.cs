@@ -15,7 +15,7 @@ namespace SwiftZombies.Core
 
         public Vector3 Offset = Vector3.up * 0.5f;
 
-        public float BuildTime = 4f;
+        public float BuildTime = 2f;
 
         public bool Built => built != null;
 
@@ -51,8 +51,8 @@ namespace SwiftZombies.Core
         public void Block()
         {
             BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.transform.position + Offset, Quaternion.identity, Vector3.one, Color.red);
-            toy.SetHealth(220f);
-            toy.Faction = Faction.FoundationStaff;
+            toy.SetHealth(300f);
+            toy.Faction = Faction.FoundationEnemy;
             built = toy;
         }
 
