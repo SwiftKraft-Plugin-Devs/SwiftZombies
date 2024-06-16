@@ -32,7 +32,6 @@ namespace SwiftZombies.Core
             EventHandler.OnPlayerDying -= CheckFinish;
             EventHandler.OnPlayerDying += CheckFinish;
             Timing.KillCoroutines(spawnCoroutine);
-            Server.SendBroadcast("Spawning Zombies! Count: " + Count, 5, shouldClearPrevious: true);
             spawnCoroutine = Timing.RunCoroutine(RunSpawn());
         }
 

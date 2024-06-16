@@ -47,11 +47,11 @@ namespace SwiftZombies
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN3".GetCustomItemWithID(), ID = "ALLY3", Price = 2000 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN4".GetCustomItemWithID(), ID = "ALLY4", Price = 3000 });
             shop.AddItem(new CustomShopItem() { Item = "FLASHMAN".GetCustomItemWithID(), ID = "ALLYFLASH", Price = 1500 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.Ammo9x19, ID = "9MM", Price = 10 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.Ammo762x39, ID = "762", Price = 15 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.Ammo556x45, ID = "556", Price = 15 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.Ammo12gauge, ID = "12G", Price = 20 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.Ammo44cal, ID = "44C", Price = 10 });
+            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo9x19, Amount = 50, ID = "9MM", Price = 10 });
+            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo762x39, Amount = 30, ID = "762", Price = 15 });
+            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo556x45, Amount = 30, ID = "556", Price = 15 });
+            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo12gauge, Amount = 20, ID = "12G", Price = 20 });
+            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo44cal, Amount = 20, ID = "44C", Price = 10 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.GunCOM15, ID = "C15", Price = 100 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.GunCOM18, ID = "C18", Price = 300 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.GunCrossvec, ID = "CV", Price = 650 });

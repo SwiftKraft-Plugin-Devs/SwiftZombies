@@ -94,7 +94,7 @@ namespace SwiftZombies
                     f.Status = new(f.AmmoManagerModule.MaxAmmo, f.Status.Flags, value2);
                 DamageReduction d = p.EffectsManager.EnableEffect<DamageReduction>();
                 MovementBoost m = p.EffectsManager.EnableEffect<MovementBoost>();
-                d.Intensity = 150;
+                d.Intensity = 160;
                 m.Intensity = 35;
                 p.AddAmmo(ItemType.Ammo9x19, 300);
                 p.AddItem(ItemType.KeycardJanitor);
