@@ -5,6 +5,7 @@ using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Events;
 using SwiftNPCs.Core.Management;
+using SwiftNPCs.Core.World.AIModules;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,9 +18,11 @@ namespace SwiftZombies.Core
         public readonly List<AIPlayerProfile> AI = [];
 
         public readonly EnemyProfile[] Profile = prof;
-        public readonly int Count = count * (Server.PlayerCount / 4 + 1);
-        public float DelayMin = 0.25f / (Server.PlayerCount / 4 + 1);
-        public float DelayMax = 1.5f / (Server.PlayerCount / 4 + 1);
+        public readonly int Count = count * (Server.PlayerCount / 6 + 1);
+        public float DelayMin = 0.25f;
+        public float DelayMax = 1f;
+
+        public int Limit = 20;
 
         public bool Finished { get; private set; }
 
@@ -58,6 +61,9 @@ namespace SwiftZombies.Core
         {
             for (int i = 0; i < Count; i++)
             {
+                while (AI.Count >= Limit)
+                    yield return Timing.WaitForOneFrame;
+
                 AI.Add(Profile.RandomItem().Spawn(EventHandler.SpawnLocations.RandomItem()));
                 yield return Timing.WaitForSeconds(Random.Range(DelayMin, DelayMax));
             }
@@ -73,8 +79,16 @@ namespace SwiftZombies.Core
             public AIPlayerProfile Spawn(Vector3 pos)
             {
                 AIPlayerProfile prof = SwiftNPCs.Utilities.CreateBasicAI(Role, pos);
+                prof.WorldPlayer.ModuleRunner.CanWallhack = true;
                 prof.WorldPlayer.MovementEngine.SpeedOverride = Speed;
                 prof.Player.Health = Health;
+
+                if (prof.WorldPlayer.ModuleRunner.TryGetModule(out AIGrenadeThrow g))
+                {
+                    g.InfiniteGrenades = true;
+                    g.Delay = 20;
+                }
+
                 ItemBase it = prof.Player.AddItem(Item);
                 if (it is Firearm f)
                     f.Status = new(f.AmmoManagerModule.MaxAmmo, f.Status.Flags, f.Status.Attachments);

@@ -67,7 +67,7 @@ namespace SwiftZombies
             shop.AddItem(new RegularShopItem() { Item = ItemType.GrenadeFlash, ID = "FLASH", Price = 500 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.GrenadeHE, ID = "GRENADE", Price = 800 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.SCP207, ID = "COLA", Price = 1200 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.SCP1576, ID = "JUICE", Price = 1400 });
+            shop.AddItem(new RegularShopItem() { Item = ItemType.SCP1853, ID = "JUICE", Price = 1400 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.Medkit, ID = "MEDKIT", Price = 200 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.Adrenaline, ID = "ADR", Price = 300 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.Painkillers, ID = "PILL", Price = 100 });

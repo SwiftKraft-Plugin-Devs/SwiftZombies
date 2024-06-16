@@ -65,7 +65,7 @@ namespace SwiftZombies.Core
                         Waves[Current].Spawn();
                     }
 
-                    Server.SendBroadcast((Current == Waves.Count - 1 ? "Final Wave" : "Wave " + (Current + 1)) + "! Count: " + Waves[Current].Count, 5, shouldClearPrevious: true);
+                    Server.SendBroadcast((Current == Waves.Count - 1 ? "Final Wave" : "Wave " + Current) + "! Count: " + Waves[Current].Count, 5, shouldClearPrevious: true);
                 }
             }
         }

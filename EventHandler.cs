@@ -9,9 +9,11 @@ using MEC;
 using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
+using PluginAPI.Core.Zones;
 using PluginAPI.Enums;
 using PluginAPI.Events;
 using RoundRestarting;
+using SwiftAPI.API.BreakableToys;
 using SwiftNPCs.Core.Management;
 using SwiftShops.API;
 using SwiftZombies.Core;
@@ -25,6 +27,7 @@ namespace SwiftZombies
 {
     public class EventHandler
     {
+        public static readonly List<FacilityRoom> BlacklistRooms = [];
         public static readonly List<Vector3> SpawnLocations = [];
 
         [PluginEvent(ServerEventType.PlayerInteractDoor)]
@@ -51,14 +54,14 @@ namespace SwiftZombies
                     {
                         if (p.Role != RoleTypeId.ClassD)
                             continue;
-                        int balance = Mathf.CeilToInt(20f / i);
+                        int balance = Mathf.CeilToInt(30f / i);
                         p.SetBalance(p.GetBalance() + balance);
                         p.ReceiveHint("Ally Killed Zombie: +$" + balance + "\nCurrent Money: " + p.GetBalance(), [HintEffectPresets.FadeOut()]);
                     }
                 else
                 {
-                    _event.Attacker.SetBalance(_event.Attacker.GetBalance() + 20f);
-                    _event.Attacker.ReceiveHint("Killed Zombie: +$" + 20f + "\nCurrent Money: " + _event.Attacker.GetBalance(), [HintEffectPresets.FadeOut()]);
+                    _event.Attacker.SetBalance(_event.Attacker.GetBalance() + 30f);
+                    _event.Attacker.ReceiveHint("Killed Zombie: +$" + 30f + "\nCurrent Money: " + _event.Attacker.GetBalance(), [HintEffectPresets.FadeOut()]);
                 }
             }
             else if (_event.Player.TryGetAI(out AIPlayerProfile prof))
@@ -75,6 +78,29 @@ namespace SwiftZombies
             Log.Info(i + " humans remaining! ");
             if (i <= 0 && !RoundRestart.IsRoundRestarting)
                 GameRunner.Lose();
+        }
+
+        [PluginEvent(ServerEventType.PlayerDamage)]
+        public void PlayerDamage(PlayerDamageEvent _event)
+        {
+            List<Player> players = Player.GetPlayers();
+            int i = players.Count((p) => p.Role == RoleTypeId.ClassD);
+            if (_event.Target.IsSCP)
+            {
+                if (_event.Player.IsAI())
+                    foreach (Player p in players)
+                    {
+                        if (p.Role != RoleTypeId.ClassD)
+                            continue;
+                        p.SetBalance(p.GetBalance() + 1f);
+                        p.ReceiveHint("Ally Damaged Zombie: +$" + 1f + "\nCurrent Money: " + p.GetBalance(), [HintEffectPresets.FadeOut()]);
+                    }
+                else
+                {
+                    _event.Player.SetBalance(_event.Player.GetBalance() + 2f);
+                    _event.Player.ReceiveHint("Damaged Zombie: +$" + 2f + "\nCurrent Money: " + _event.Player.GetBalance(), [HintEffectPresets.FadeOut()]);
+                }
+            }
         }
 
         public static event Action<PlayerDyingEvent> OnPlayerDying;
@@ -155,8 +181,7 @@ namespace SwiftZombies
                 RoomName.Lcz173,
                 RoomName.LczArmory,
                 RoomName.LczGlassroom,
-                RoomName.LczComputerRoom,
-                RoomName.Lcz914
+                RoomName.LczComputerRoom
             ];
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
@@ -170,8 +195,15 @@ namespace SwiftZombies
                 }
 
                 if (lockRooms.Contains(room.Name))
+                {
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
+                    {
                         door.ServerChangeLock(DoorLockReason.AdminCommand, true);
+                        BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, door.transform.position + Vector3.up * 7f, Quaternion.identity, new(1f, 15f, 1f), Color.white).MaxHealth = -1f;
+                    }
+
+                    BlacklistRooms.Add(room.ApiRoom);
+                }
             }
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
@@ -182,17 +214,20 @@ namespace SwiftZombies
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
                 if (room.Name == RoomName.Lcz914)
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
+                    {
                         door.NetworkTargetState = true;
+                        door.ServerChangeLock(DoorLockReason.AdminCommand, true);
+                    }
 
             foreach (DoorVariant door in DoorVariant.AllDoors)
-                if (door is ElevatorDoor)
+                if (door is ElevatorDoor || door is CheckpointDoor)
                     door.ServerChangeLock(DoorLockReason.AdminCommand, true);
 
             Wave.EnemyProfile enemy1 = new(RoleTypeId.Scp0492, 50, 5);
-            Wave.EnemyProfile enemy2 = new(RoleTypeId.Scp0492, 100, 6);
-            Wave.EnemyProfile enemy3 = new(RoleTypeId.Scp0492, 150, 6, ItemType.GunCOM15);
-            Wave.EnemyProfile enemy4 = new(RoleTypeId.Scp0492, 100, 8);
-            Wave.EnemyProfile enemy5 = new(RoleTypeId.Scp0492, 25, 10, ItemType.GunCom45);
+            Wave.EnemyProfile enemy2 = new(RoleTypeId.Scp0492, 100, 5);
+            Wave.EnemyProfile enemy3 = new(RoleTypeId.Scp0492, 150, 4, ItemType.GunCOM15);
+            Wave.EnemyProfile enemy4 = new(RoleTypeId.Scp0492, 30, 2, ItemType.GunA7);
+            Wave.EnemyProfile enemy5 = new(RoleTypeId.Scp0492, 100, 4, ItemType.GrenadeFlash);
             Wave.EnemyProfile enemy6 = new(RoleTypeId.Scp0492, 800, 3, ItemType.Medkit);
             Wave.EnemyProfile enemy7 = new(RoleTypeId.Scp0492, 300, 4, ItemType.GunCOM18);
 

@@ -52,7 +52,6 @@ namespace SwiftZombies.Core
         {
             BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.transform.position + Offset, Quaternion.identity, Vector3.one, Color.red);
             toy.SetHealth(300f);
-            toy.Faction = Faction.FoundationEnemy;
             built = toy;
         }
 
