@@ -6,6 +6,7 @@ using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
 using MapGeneration;
 using MEC;
+using Mirror;
 using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
@@ -22,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using Object = UnityEngine.Object;
 
 namespace SwiftZombies
 {
@@ -29,6 +31,7 @@ namespace SwiftZombies
     {
         public static readonly List<FacilityRoom> BlacklistRooms = [];
         public static readonly List<Vector3> SpawnLocations = [];
+        public static readonly Dictionary<ShopItem, ItemType> WorldShopItems = [];
 
         [PluginEvent(ServerEventType.PlayerInteractDoor)]
         public void PlayerInteractDoor(PlayerInteractDoorEvent _event)
@@ -184,6 +187,8 @@ namespace SwiftZombies
                 RoomName.LczComputerRoom
             ];
 
+            List<ShopItem> temp = [.. WorldShopItems.Keys];
+
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
             {
                 if (names.Contains(room.Name) && NavMesh.SamplePosition(room.transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
@@ -193,8 +198,7 @@ namespace SwiftZombies
                         if (door is BreakableDoor)
                             new BlockableEntry(door).Block();
                 }
-
-                if (lockRooms.Contains(room.Name))
+                else if (lockRooms.Contains(room.Name))
                 {
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
                     {
@@ -203,6 +207,11 @@ namespace SwiftZombies
                     }
 
                     BlacklistRooms.Add(room.ApiRoom);
+                }
+                else if (temp.Count > 0 && room.gameObject.activeSelf)
+                {
+                    ShopItem item = temp.PullRandomItem();
+                    ShopProfile.CreateWorldItem(item, WorldShopItems[item], room.transform.position + Vector3.up * 2, Quaternion.identity);
                 }
             }
 
@@ -213,11 +222,15 @@ namespace SwiftZombies
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
                 if (room.Name == RoomName.Lcz914)
+                {
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
                     {
                         door.NetworkTargetState = true;
                         door.ServerChangeLock(DoorLockReason.AdminCommand, true);
                     }
+
+                    SpawnWorkbench(room.transform.position + (room.transform.rotation * new Vector3(2, 1, 4)), room.transform.eulerAngles, Vector3.one);
+                }
 
             foreach (DoorVariant door in DoorVariant.AllDoors)
                 if (door is ElevatorDoor || door is CheckpointDoor)
@@ -252,6 +265,34 @@ namespace SwiftZombies
                 new(120, enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7));
 
             runner.SpawnWaves();
+        }
+
+        public static void SpawnWorkbench(Vector3 position, Vector3 rotation, Vector3 size)
+        {
+            try
+            {
+                Log.Debug($"Spawning workbench");
+                GameObject bench =
+                    Object.Instantiate(
+                        NetworkManager.singleton.spawnPrefabs.Find(p => p.name.Equals("Spawnable Work Station Structure")));
+                rotation.x += 180;
+                rotation.z += 180;
+                Offset offset = new()
+                {
+                    position = position,
+                    rotation = rotation,
+                    scale = Vector3.one,
+                };
+                bench.gameObject.transform.localScale = size;
+                NetworkServer.Spawn(bench);
+                bench.transform.localPosition = offset.position;
+                bench.transform.localRotation = Quaternion.Euler(offset.rotation);
+                bench.AddComponent<WorkstationController>();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"{nameof(SpawnWorkbench)}: {e}");
+            }
         }
     }
 }

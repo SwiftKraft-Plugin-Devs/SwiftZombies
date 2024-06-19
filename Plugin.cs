@@ -1,4 +1,5 @@
-﻿using PluginAPI.Core;
+﻿using Mirror;
+using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using PluginAPI.Events;
@@ -6,7 +7,9 @@ using PluginAPI.Helpers;
 using SwiftAPI.API.CustomItems;
 using SwiftShops.API;
 using SwiftZombies.Core;
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace SwiftZombies
 {
@@ -47,23 +50,23 @@ namespace SwiftZombies
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN3".GetCustomItemWithID(), ID = "ALLY3", Price = 2000 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN4".GetCustomItemWithID(), ID = "ALLY4", Price = 3000 });
             shop.AddItem(new CustomShopItem() { Item = "FLASHMAN".GetCustomItemWithID(), ID = "ALLYFLASH", Price = 1500 });
-            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo9x19, Amount = 50, ID = "9MM", Price = 10 });
-            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo762x39, Amount = 30, ID = "762", Price = 15 });
-            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo556x45, Amount = 30, ID = "556", Price = 15 });
-            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo12gauge, Amount = 20, ID = "12G", Price = 20 });
-            shop.AddItem(new AmmoShopItem() { Item = ItemType.Ammo44cal, Amount = 20, ID = "44C", Price = 10 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunCOM15, ID = "C15", Price = 100 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunCOM18, ID = "C18", Price = 300 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunCrossvec, ID = "CV", Price = 650 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunE11SR, ID = "E11", Price = 1200 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunFSP9, ID = "FSP", Price = 500 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunAK, ID = "AK", Price = 1100 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunFRMG0, ID = "FRMG", Price = 2500 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunLogicer, ID = "LOGI", Price = 2300 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunRevolver, ID = "REV", Price = 700 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunShotgun, ID = "SG", Price = 1150 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunCom45, ID = "C45", Price = 3000 });
-            shop.AddItem(new RegularShopItem() { Item = ItemType.GunA7, ID = "A7", Price = 950 });
+            EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo9x19, Amount = 50, ID = "9MM", Price = 10 }, ItemType.KeycardGuard);
+            EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo762x39, Amount = 30, ID = "762", Price = 15 }, ItemType.KeycardChaosInsurgency);
+            EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo556x45, Amount = 30, ID = "556", Price = 15 }, ItemType.KeycardMTFCaptain);
+            EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo12gauge, Amount = 20, ID = "12G", Price = 20 }, ItemType.KeycardResearchCoordinator);
+            EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo44cal, Amount = 20, ID = "44C", Price = 10 }, ItemType.KeycardContainmentEngineer);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunCOM15, ID = "C15", Price = 100 }, ItemType.GunCOM15);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunCOM18, ID = "C18", Price = 300 }, ItemType.GunCOM18);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunCrossvec, ID = "CV", Price = 650 }, ItemType.GunCrossvec);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunE11SR, ID = "E11", Price = 1200 }, ItemType.GunE11SR);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunFSP9, ID = "FSP", Price = 500 }, ItemType.GunFSP9);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunAK, ID = "AK", Price = 1100 }, ItemType.GunAK);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunFRMG0, ID = "FRMG", Price = 2500 }, ItemType.GunFRMG0);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunLogicer, ID = "LOGI", Price = 2300 }, ItemType.GunLogicer);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunRevolver, ID = "REV", Price = 700 }, ItemType.GunRevolver);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunShotgun, ID = "SG", Price = 1150 }, ItemType.GunShotgun);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunCom45, ID = "C45", Price = 3000 }, ItemType.GunCom45);
+            EventHandler.WorldShopItems.Add(new RegularShopItem() { Item = ItemType.GunA7, ID = "A7", Price = 950 }, ItemType.GunA7);
             shop.AddItem(new RegularShopItem() { Item = ItemType.GrenadeFlash, ID = "FLASH", Price = 500 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.GrenadeHE, ID = "GRENADE", Price = 800 });
             shop.AddItem(new RegularShopItem() { Item = ItemType.SCP207, ID = "COLA", Price = 1200 });
