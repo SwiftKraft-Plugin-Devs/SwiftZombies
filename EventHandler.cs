@@ -189,6 +189,15 @@ namespace SwiftZombies
 
             List<ShopItem> temp = [.. WorldShopItems.Keys];
 
+            RoomIdentifier dClassCells = null;
+            RoomIdentifier scp914 = null;
+
+            foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
+                if (room.Name == RoomName.LczClassDSpawn)
+                    dClassCells = room;
+                else if (room.Name == RoomName.Lcz914)
+                    scp914 = room;
+
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
             {
                 if (names.Contains(room.Name) && NavMesh.SamplePosition(room.transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
@@ -202,6 +211,9 @@ namespace SwiftZombies
                 {
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
                     {
+                        if (DoorVariant.DoorsByRoom[dClassCells].Contains(door))
+                            continue;
+
                         door.ServerChangeLock(DoorLockReason.AdminCommand, true);
                         BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, door.transform.position + Vector3.up * 7f, Quaternion.identity, new(1f, 15f, 1f), Color.white).MaxHealth = -1f;
                     }
@@ -215,22 +227,13 @@ namespace SwiftZombies
                 }
             }
 
-            foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
-                if (room.Name == RoomName.LczClassDSpawn)
-                    foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
-                        door.ServerChangeLock(DoorLockReason.AdminCommand, false);
+            foreach (DoorVariant door in DoorVariant.DoorsByRoom[scp914])
+            {
+                door.NetworkTargetState = true;
+                door.ServerChangeLock(DoorLockReason.AdminCommand, true);
+            }
 
-            foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
-                if (room.Name == RoomName.Lcz914)
-                {
-                    foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
-                    {
-                        door.NetworkTargetState = true;
-                        door.ServerChangeLock(DoorLockReason.AdminCommand, true);
-                    }
-
-                    SpawnWorkbench(room.transform.position + (room.transform.rotation * new Vector3(2, 1, 4)), room.transform.eulerAngles, Vector3.one);
-                }
+            SpawnWorkbench(scp914.transform.position + (scp914.transform.rotation * new Vector3(0.25f, 0, 7.25f)), scp914.transform.eulerAngles, Vector3.one);
 
             foreach (DoorVariant door in DoorVariant.AllDoors)
                 if (door is ElevatorDoor || door is CheckpointDoor)
@@ -274,7 +277,7 @@ namespace SwiftZombies
                 Log.Debug($"Spawning workbench");
                 GameObject bench =
                     Object.Instantiate(
-                        NetworkManager.singleton.spawnPrefabs.Find(p => p.name.Equals("Spawnable Work Station Structure")));
+                        NetworkClient.prefabs.Values.FirstOrDefault(o => o.TryGetComponent(out WorkstationController _)));
                 rotation.x += 180;
                 rotation.z += 180;
                 Offset offset = new()
@@ -287,7 +290,6 @@ namespace SwiftZombies
                 NetworkServer.Spawn(bench);
                 bench.transform.localPosition = offset.position;
                 bench.transform.localRotation = Quaternion.Euler(offset.rotation);
-                bench.AddComponent<WorkstationController>();
             }
             catch (Exception e)
             {
