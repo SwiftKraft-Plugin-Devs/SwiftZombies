@@ -15,6 +15,7 @@ using PluginAPI.Enums;
 using PluginAPI.Events;
 using RoundRestarting;
 using SwiftAPI.API.BreakableToys;
+using SwiftAPI.Utility.Spawners;
 using SwiftNPCs.Core.Management;
 using SwiftShops.API;
 using SwiftZombies.Core;
@@ -32,6 +33,7 @@ namespace SwiftZombies
         public static readonly List<FacilityRoom> BlacklistRooms = [];
         public static readonly List<Vector3> SpawnLocations = [];
         public static readonly Dictionary<ShopItem, ItemType> WorldShopItems = [];
+        public static RoomIdentifier SpawnRoom;
 
         [PluginEvent(ServerEventType.PlayerInteractDoor)]
         public void PlayerInteractDoor(PlayerInteractDoorEvent _event)
@@ -90,7 +92,7 @@ namespace SwiftZombies
             int i = players.Count((p) => p.Role == RoleTypeId.ClassD);
             if (_event.Target.IsSCP)
             {
-                if (_event.Player.IsAI())
+                if (_event.Player.Role == RoleTypeId.ChaosRepressor)
                     foreach (Player p in players)
                     {
                         if (p.Role != RoleTypeId.ClassD)
@@ -157,6 +159,16 @@ namespace SwiftZombies
             Server.SendBroadcast("Only 1 player detected! \nPress \"~\" and type \".start\" to start by yourself.", 10, type: Broadcast.BroadcastFlags.Truncated, shouldClearPrevious: true);
         }
 
+        [PluginEvent(ServerEventType.PlayerSpawn)]
+        public void PlayerSpawn(PlayerSpawnEvent _event)
+        {
+            if (_event.Role != RoleTypeId.ClassD)
+                return;
+
+            if (SpawnRoom != null)
+                _event.Player.Position = SpawnRoom.transform.position + Vector3.up * 1.5f;
+        }
+
         [PluginEvent(ServerEventType.RoundStart)]
         public void RoundStart(RoundStartEvent _event)
         {
@@ -197,6 +209,8 @@ namespace SwiftZombies
                     dClassCells = room;
                 else if (room.Name == RoomName.Lcz914)
                     scp914 = room;
+
+            SpawnRoom = dClassCells;
 
             foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
             {
