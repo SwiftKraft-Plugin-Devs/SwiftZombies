@@ -1,6 +1,5 @@
 ﻿using Interactables.Interobjects.DoorUtils;
 using MEC;
-using PlayerRoles;
 using SwiftAPI.API.BreakableToys;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +49,7 @@ namespace SwiftZombies.Core
 
         public void Block()
         {
-            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.transform.position + Offset, Quaternion.identity, Vector3.one, Color.red);
+            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, Door.transform.position + Offset, Door.transform.rotation, new(1.3f, 1f, 0.5f), Color.red);
             toy.SetHealth(300f);
             built = toy;
         }
