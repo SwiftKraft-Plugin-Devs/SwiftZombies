@@ -49,6 +49,9 @@ namespace SwiftZombies
         [PluginEvent(ServerEventType.PlayerDying)]
         public void PlayerDying(PlayerDyingEvent _event)
         {
+            if (_event.Player == null)
+                return;
+
             List<Player> players = Player.GetPlayers();
             int i = players.Count((p) => p.Role == RoleTypeId.ClassD);
             if (_event.Player.IsSCP)

@@ -3,6 +3,7 @@ using InventorySystem.Items.Firearms;
 using MEC;
 using PlayerRoles;
 using PluginAPI.Core;
+using PluginAPI.Core.Zones;
 using PluginAPI.Events;
 using SwiftNPCs.Core.Management;
 using SwiftNPCs.Core.World.AIModules;
@@ -87,6 +88,12 @@ namespace SwiftZombies.Core
                 {
                     g.InfiniteGrenades = true;
                     g.Delay = 20;
+                }
+
+                if (prof.WorldPlayer.ModuleRunner.TryGetModule(out AIWander w))
+                {
+                    foreach (FacilityRoom a in EventHandler.BlacklistRooms)
+                        w.Blacklist.Add(a);
                 }
 
                 ItemBase it = prof.Player.AddItem(Item);
