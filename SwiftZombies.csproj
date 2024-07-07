@@ -27,6 +27,9 @@
     <Reference Include="Mirror">
       <HintPath>$(SCPSLREFERENCES)\Mirror-Publicized.dll</HintPath>
     </Reference>
+    <Reference Include="Pooling">
+      <HintPath>..\..\..\..\..\..\..\SCP_DLLS\Pooling.dll</HintPath>
+    </Reference>
     <Reference Include="SwiftAPI">
       <HintPath>$(SCPSLREFERENCES)\SwiftAPI.dll</HintPath>
     </Reference>

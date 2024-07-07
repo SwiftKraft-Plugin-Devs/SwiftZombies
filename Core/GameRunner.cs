@@ -1,9 +1,12 @@
-﻿using MEC;
+﻿using InventorySystem.Items.Pickups;
+using MapGeneration;
+using MEC;
 using Mirror;
 using PlayerRoles;
 using PlayerRoles.Ragdolls;
 using PluginAPI.Core;
 using RoundRestarting;
+using SwiftShops.API;
 using System.Collections.Generic;
 
 namespace SwiftZombies.Core
@@ -32,10 +35,51 @@ namespace SwiftZombies.Core
                 Server.SendBroadcast("Intermission: 20s", 5, shouldClearPrevious: true);
 
                 BasicRagdoll[] array = UnityEngine.Object.FindObjectsOfType<BasicRagdoll>();
-                int num = array.Length;
 
-                for (int i = 0; i < num; i++)
+                for (int i = 0; i < array.Length; i++)
                     NetworkServer.Destroy(array[i].gameObject);
+
+                ItemPickupBase[] items = UnityEngine.Object.FindObjectsOfType<ItemPickupBase>();
+                
+                ItemType[] ids =
+                [
+                    ItemType.Ammo9x19,
+                    ItemType.Ammo762x39,
+                    ItemType.Ammo556x45,
+                    ItemType.Ammo44cal,
+                    ItemType.Ammo12gauge,
+                    ItemType.Adrenaline,
+                    ItemType.SCP500,
+                    ItemType.SCP207,
+                    ItemType.SCP1576,
+                    ItemType.SCP1853,
+                    ItemType.SCP2176,
+                    ItemType.SCP268,
+                    ItemType.SCP330,
+                    ItemType.AntiSCP207,
+                    ItemType.GunAK,
+                    ItemType.GunCom45,
+                    ItemType.GunCrossvec,
+                    ItemType.GunE11SR,
+                    ItemType.GunFRMG0,
+                    ItemType.GunLogicer,
+                    ItemType.GunShotgun,
+                    ItemType.Jailbird,
+                    ItemType.KeycardO5,
+                    ItemType.KeycardFacilityManager,
+                    ItemType.KeycardMTFCaptain,
+                    ItemType.KeycardJanitor,
+                    ItemType.KeycardScientist,
+                    ItemType.KeycardZoneManager,
+                    ItemType.MicroHID,
+                    ItemType.ParticleDisruptor
+                ];
+
+                for (int i = 0; i < items.Length; i++) {
+                    RoomIdentifier id = RoomIdUtils.RoomAtPosition(items[i].transform.position);
+                    if (items[i] != null && !ids.Contains(items[i].Info.ItemId) && !ShopProfile.WorldItems.ContainsKey(items[i].Info.Serial) && (id == null || id.Name != RoomName.Lcz914))
+                        NetworkServer.Destroy(items[i].gameObject);
+                }
 
                 List<Player> players = Player.GetPlayers();
                 foreach (Player p in players)

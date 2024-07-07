@@ -1,5 +1,6 @@
 ﻿using Hints;
 using InventorySystem.Items;
+using PlayerRoles.FirstPersonControl;
 using PluginAPI.Core;
 using SwiftAPI.API.BreakableToys;
 using SwiftAPI.API.CustomItems;
@@ -14,7 +15,9 @@ namespace SwiftZombies.Core
         public float Range = 5f;
         public float Cooldown = 10f;
         public Vector3 ToySize = Vector3.one;
+        public Vector3 Offset = Vector3.down * 1.5f;
         public Color ToyColor = Color.blue;
+        public float Health = 100f;
 
         public override void Destroy(ushort _itemSerial) { }
 
@@ -22,6 +25,12 @@ namespace SwiftZombies.Core
 
         public override bool Drop(Player _player, ItemBase _item)
         {
+            if (_player.ReferenceHub.roleManager.CurrentRole is not IFpcRole role || !role.FpcModule.IsGrounded)
+            {
+                _player.ReceiveHint("Must be on the ground to place!", [HintEffectPresets.FadeOut()]);
+                return false;
+            }
+
             Spawn(_player);
             _player.RemoveItem(_item);
             _player.ReferenceHub.inventory.SendItemsNextFrame = true;
@@ -34,8 +43,8 @@ namespace SwiftZombies.Core
                 return;
 
             T trap = Activator.CreateInstance<T>();
-            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, p.Position + Vector3.down * 1.5f, Quaternion.identity, ToySize, ToyColor);
-            toy.SetHealth(500f);
+            BreakableToyBase toy = BreakableToyManager.SpawnBreakableToy<BreakableToyBase>(null, PrimitiveType.Cube, p.Position + Offset, Quaternion.identity, ToySize, ToyColor);
+            toy.SetHealth(Health);
             trap.Init(p, toy);
             trap.Range = Range;
             trap.Cooldown = Cooldown;

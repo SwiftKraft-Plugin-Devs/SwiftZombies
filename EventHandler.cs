@@ -63,7 +63,7 @@ namespace SwiftZombies
         [PluginEvent(ServerEventType.PlayerDying)]
         public void PlayerDying(PlayerDyingEvent _event)
         {
-            if (_event.Player == null)
+            if (_event.Player == null || _event.Attacker == null)
                 return;
 
             List<Player> players = Player.GetPlayers();

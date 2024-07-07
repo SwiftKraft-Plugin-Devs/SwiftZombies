@@ -29,12 +29,6 @@ namespace SwiftZombies.Core.Traps
 
         protected void Update()
         {
-            if (Toy == null)
-            {
-                Traps.Remove(this);
-                return;
-            }
-
             if (timer > 0f)
                 timer -= Time.fixedDeltaTime;
             else if (CheckEnemies())
@@ -56,6 +50,8 @@ namespace SwiftZombies.Core.Traps
 
         public static void FixedUpdate()
         {
+            Traps.RemoveAll((t) => t.Toy == null);
+
             foreach (Trap t in Traps)
                 t.Update();
         }
