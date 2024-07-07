@@ -16,6 +16,8 @@ namespace SwiftZombies.Core
 
         public int Current { get; private set; }
 
+        public bool FinalWave { get; private set; }
+
         public void SpawnWaves()
         {
             Timing.RunCoroutine(SpawnWavesHelper());
@@ -23,7 +25,7 @@ namespace SwiftZombies.Core
 
         private IEnumerator<float> SpawnWavesHelper()
         {
-            if (Current >= Waves.Count)
+            if (FinalWave)
                 Win();
             else
             {
@@ -51,19 +53,26 @@ namespace SwiftZombies.Core
                 {
                     if (Current == 0)
                     {
+                        StaticUnityMethods.OnFixedUpdate -= Waves[Current].Update;
                         Waves[Current].OnFinished -= SpawnWaves;
                         Waves[Current].OnFinished += SpawnWaves;
                         Waves[Current++].Spawn();
+                        StaticUnityMethods.OnFixedUpdate -= Waves[Current].Update;
+                        StaticUnityMethods.OnFixedUpdate += Waves[Current].Update;
                     }
                     else
                     {
+                        StaticUnityMethods.OnFixedUpdate -= Waves[Current].Update;
                         Waves[Current++].OnFinished -= SpawnWaves;
                         Waves[Current].OnFinished -= SpawnWaves;
                         Waves[Current].OnFinished += SpawnWaves;
                         Waves[Current].Spawn();
+                        StaticUnityMethods.OnFixedUpdate -= Waves[Current].Update;
+                        StaticUnityMethods.OnFixedUpdate += Waves[Current].Update;
                     }
 
                     Server.SendBroadcast((Current == Waves.Count - 1 ? "Final Wave" : "Wave " + Current) + "! Count: " + Waves[Current].Count, 5, shouldClearPrevious: true);
+                    FinalWave = Current == Waves.Count - 1;
                 }
             }
         }

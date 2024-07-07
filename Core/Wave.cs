@@ -16,7 +16,7 @@ namespace SwiftZombies.Core
 {
     public class Wave(int count, params Wave.EnemyProfile[] prof)
     {
-        public readonly List<AIPlayerProfile> AI = [];
+        public readonly List<Player> AI = [];
 
         public readonly EnemyProfile[] Profile = prof;
         public readonly int Count = count * (Server.PlayerCount / 6 + 1);
@@ -39,12 +39,23 @@ namespace SwiftZombies.Core
             spawnCoroutine = Timing.RunCoroutine(RunSpawn());
         }
 
-        private void CheckFinish(PlayerDyingEvent _event)
+        public void Update()
         {
-            if (!_event.Player.TryGetAI(out AIPlayerProfile p) || !AI.Contains(p))
+            if (Finished || spawnCoroutine.IsRunning)
                 return;
 
-            AI.Remove(p);
+            AI.RemoveAll((p) => p == null || !p.IsAlive);
+
+            if (AI.Count <= 0)
+                Finish();
+        }
+
+        private void CheckFinish(PlayerDyingEvent _event)
+        {
+            if (!_event.Player.TryGetAI(out AIPlayerProfile p) || !AI.Contains(p.Player))
+                return;
+
+            AI.Remove(p.Player);
 
             if (!Finished && AI.Count <= 0 && !spawnCoroutine.IsRunning)
                 Finish();
@@ -65,7 +76,7 @@ namespace SwiftZombies.Core
                 while (AI.Count >= Limit)
                     yield return Timing.WaitForOneFrame;
 
-                AI.Add(Profile.RandomItem().Spawn(EventHandler.SpawnLocations.RandomItem()));
+                AI.Add(Profile.RandomItem().Spawn(EventHandler.SpawnLocations.RandomItem()).Player);
                 yield return Timing.WaitForSeconds(Random.Range(DelayMin, DelayMax));
             }
         }

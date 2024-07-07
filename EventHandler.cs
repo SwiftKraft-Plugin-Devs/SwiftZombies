@@ -4,12 +4,14 @@ using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Pickups;
 using MapGeneration;
 using MEC;
 using Mirror;
 using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
+using PluginAPI.Core.Items;
 using PluginAPI.Core.Zones;
 using PluginAPI.Enums;
 using PluginAPI.Events;
@@ -24,6 +26,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace SwiftZombies
 {
@@ -33,6 +36,17 @@ namespace SwiftZombies
         public static readonly List<Vector3> SpawnLocations = [];
         public static readonly Dictionary<ShopItem, ItemType> WorldShopItems = [];
         public static RoomIdentifier SpawnRoom;
+
+        public static readonly List<ItemType> Drops =
+        [
+            ItemType.Ammo9x19,
+            ItemType.Ammo762x39,
+            ItemType.Ammo556x45,
+            ItemType.Ammo44cal,
+            ItemType.Ammo12gauge,
+            ItemType.Painkillers,
+            ItemType.SCP330
+        ];
 
         [PluginEvent(ServerEventType.PlayerInteractDoor)]
         public void PlayerInteractDoor(PlayerInteractDoorEvent _event)
@@ -56,6 +70,12 @@ namespace SwiftZombies
             int i = players.Count((p) => p.Role == RoleTypeId.ClassD);
             if (_event.Player.IsSCP)
             {
+                if (Random.Range(0f, 100f) <= 30f)
+                {
+                    ItemPickup it = ItemPickup.Create(Drops.RandomItem(), _event.Player.Position, Quaternion.Euler(_event.Player.Rotation));
+                    it.Spawn();
+                }
+
                 if (_event.Attacker.IsAI())
                     foreach (Player p in players)
                     {
@@ -132,7 +152,7 @@ namespace SwiftZombies
                 MovementBoost m = p.EffectsManager.EnableEffect<MovementBoost>();
                 d.Intensity = 160;
                 m.Intensity = 35;
-                p.AddAmmo(ItemType.Ammo9x19, 300);
+                p.AddAmmo(ItemType.Ammo9x19, 400);
                 p.AddItem(ItemType.KeycardJanitor);
                 p.AddItem(ItemType.Medkit);
                 p.AddItem(ItemType.Medkit);
@@ -246,7 +266,7 @@ namespace SwiftZombies
                 else if (temp.Count > 0 && room.gameObject.activeSelf)
                 {
                     ShopItem item = temp.PullRandomItem();
-                    ShopProfile.CreateWorldItem(item, WorldShopItems[item], room.transform.position + Vector3.up * 2, Quaternion.identity);
+                    ShopProfile.CreateWorldItem(item, WorldShopItems[item], room.ApiRoom.Position + Vector3.up * 4, Quaternion.identity);
                 }
             }
 
@@ -281,9 +301,8 @@ namespace SwiftZombies
             GameRunner runner = new(
                 new(10, enemy1),
                 new(15, enemy1),
-                new(10, enemy1, enemy2),
-                new(15, enemy1, enemy2, enemy3),
                 new(15, enemy1, enemy2),
+                new(20, enemy1, enemy2, enemy3),
                 new(20, enemy1, enemy2, enemy3),
                 new(25, enemy1, enemy2, enemy3),
                 new(25, enemy1, enemy3, enemy4),

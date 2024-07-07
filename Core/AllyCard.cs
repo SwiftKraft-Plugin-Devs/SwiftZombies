@@ -3,6 +3,7 @@ using Hints;
 using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Usables.Scp330;
 using MEC;
 using PluginAPI.Core;
 using SwiftAPI.API.CustomItems;
@@ -39,7 +40,7 @@ namespace SwiftZombies.Core
 
         public void Spawn(Player p)
         {
-            AIPlayerProfile prof = SwiftNPCs.Utilities.CreateBasicAI(PlayerRoles.RoleTypeId.ChaosRepressor, p.Position);
+            AIPlayerProfile prof = SwiftNPCs.Utilities.CreateBasicAI(PlayerRoles.RoleTypeId.ChaosConscript, p.Position);
             CurrentCount.Add(prof);
             p.ReceiveHint("Spawned Ally: " + CurrentCount.Count + "/" + Limit, [HintEffectPresets.FadeOut()]);
             if (prof.WorldPlayer.ModuleRunner.TryGetModule(out AIGrenadeThrow g))
@@ -50,7 +51,8 @@ namespace SwiftZombies.Core
             Timing.CallDelayed(0.5f, () =>
             {
                 DamageReduction d = prof.Player.EffectsManager.EnableEffect<DamageReduction>();
-                d.Intensity = 140;
+                Scp330Bag.AddSimpleRegeneration(prof.Player.ReferenceHub, 1f, 999999f);
+                d.Intensity = 120;
                 foreach (ItemType i in Items)
                 {
                     ItemBase it = prof.Player.AddItem(i);

@@ -7,6 +7,7 @@ using PluginAPI.Helpers;
 using SwiftAPI.API.CustomItems;
 using SwiftShops.API;
 using SwiftZombies.Core;
+using SwiftZombies.Core.Traps;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -37,6 +38,8 @@ namespace SwiftZombies
 
             Log.Info("SwiftZombies Loaded! Version: " + Version);
 
+            StaticUnityMethods.OnFixedUpdate += Trap.FixedUpdate;
+
             ShopProfile shop = new() { ID = "SZOMBIES", DisplayName = "Swift Zombies Shop" };
 
             CustomItemManager.RegisterItem("GUNMAN1", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Tier 1 Gun Man", DisplayName = "Tier 1 Gun Man", Items = [ItemType.GunCOM18] });
@@ -44,12 +47,17 @@ namespace SwiftZombies
             CustomItemManager.RegisterItem("GUNMAN3", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Tier 3 Gun Man", DisplayName = "Tier 3 Gun Man", Items = [ItemType.GunE11SR, ItemType.Medkit] });
             CustomItemManager.RegisterItem("GUNMAN4", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Tier 4 Gun Man", DisplayName = "Tier 4 Gun Man", Items = [ItemType.GunFRMG0, ItemType.Medkit, ItemType.Medkit] });
             CustomItemManager.RegisterItem("FLASHMAN", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Flashbang Man", DisplayName = "Flashbang Man", Items = [ItemType.GrenadeFlash, ItemType.Medkit] });
+            CustomItemManager.RegisterItem("FLASHTRAP", new TrapCard<FlashbangTrap>() { BaseItem = ItemType.KeycardScientist, Description = "Spawns a Flashbang Trap", DisplayName = "Flashbang Trap", Range = 5f, Cooldown = 10f });
+            CustomItemManager.RegisterItem("LANDMINE", new TrapCard<Landmine>() { BaseItem = ItemType.KeycardZoneManager, Description = "Spawns a Landmine", DisplayName = "Landmine", Range = 2f, ToySize = new(0.25f, 1f, 0.25f), ToyColor = Color.green });
 
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN1".GetCustomItemWithID(), ID = "ALLY1", Price = 500 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN2".GetCustomItemWithID(), ID = "ALLY2", Price = 1000 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN3".GetCustomItemWithID(), ID = "ALLY3", Price = 2000 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN4".GetCustomItemWithID(), ID = "ALLY4", Price = 3000 });
             shop.AddItem(new CustomShopItem() { Item = "FLASHMAN".GetCustomItemWithID(), ID = "ALLYFLASH", Price = 1500 });
+            shop.AddItem(new CustomShopItem() { Item = "FLASHTRAP".GetCustomItemWithID(), ID = "TRAPFLASH", Price = 800 });
+            shop.AddItem(new CustomShopItem() { Item = "LANDMINE".GetCustomItemWithID(), ID = "LANDMINE", Price = 500 });
+
             EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo9x19, Amount = 50, ID = "9MM", Price = 10 }, ItemType.KeycardGuard);
             EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo762x39, Amount = 30, ID = "762", Price = 15 }, ItemType.KeycardChaosInsurgency);
             EventHandler.WorldShopItems.Add(new AmmoShopItem() { Item = ItemType.Ammo556x45, Amount = 30, ID = "556", Price = 15 }, ItemType.KeycardMTFCaptain);
@@ -79,6 +87,12 @@ namespace SwiftZombies
 
             ShopManager.RegisterProfile(shop);
             ShopManager.SetProfileActive(shop, true);
+        }
+
+        [PluginUnload]
+        public void Unload()
+        {
+            StaticUnityMethods.OnFixedUpdate -= Trap.FixedUpdate;
         }
     }
 }
