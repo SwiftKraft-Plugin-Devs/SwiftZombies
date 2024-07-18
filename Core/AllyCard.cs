@@ -18,6 +18,8 @@ namespace SwiftZombies.Core
         public static int Limit = 20;
         public static readonly List<AIPlayerProfile> CurrentCount = [];
 
+        public bool Static;
+
         public ItemType[] Items;
 
         public override bool Drop(Player _player, ItemBase _item)
@@ -40,7 +42,13 @@ namespace SwiftZombies.Core
 
         public void Spawn(Player p)
         {
-            AIPlayerProfile prof = SwiftNPCs.Utilities.CreateBasicAI(PlayerRoles.RoleTypeId.ChaosConscript, p.Position);
+            AIPlayerProfile prof;
+
+            if (!Static)
+                prof = SwiftNPCs.Utilities.CreateBasicAI(PlayerRoles.RoleTypeId.ChaosConscript, p.Position);
+            else
+                prof = SwiftNPCs.Utilities.CreateStaticAI(PlayerRoles.RoleTypeId.ChaosConscript, p.Position);
+
             CurrentCount.Add(prof);
             p.ReceiveHint("Spawned Ally: " + CurrentCount.Count + "/" + Limit, [HintEffectPresets.FadeOut()]);
             if (prof.WorldPlayer.ModuleRunner.TryGetModule(out AIGrenadeThrow g))

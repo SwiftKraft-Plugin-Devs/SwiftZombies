@@ -47,7 +47,8 @@ namespace SwiftZombies
             CustomItemManager.RegisterItem("GUNMAN3", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Tier 3 Gun Man", DisplayName = "Tier 3 Gun Man", Items = [ItemType.GunE11SR, ItemType.Medkit] });
             CustomItemManager.RegisterItem("GUNMAN4", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Tier 4 Gun Man", DisplayName = "Tier 4 Gun Man", Items = [ItemType.GunFRMG0, ItemType.Medkit, ItemType.Medkit] });
             CustomItemManager.RegisterItem("FLASHMAN", new AllyCard() { BaseItem = ItemType.KeycardJanitor, Description = "Spawns a Flashbang Man", DisplayName = "Flashbang Man", Items = [ItemType.GrenadeFlash, ItemType.Medkit] });
-            CustomItemManager.RegisterItem("FLASHTRAP", new TrapCard<FlashbangTrap>() { BaseItem = ItemType.KeycardScientist, Description = "Spawns a Flashbang Trap", DisplayName = "Flashbang Trap", Offset = Vector3.down * 1.5f, Health = 200f, Range = 5f, Cooldown = 10f });
+            CustomItemManager.RegisterItem("TURRET", new AllyCard() { BaseItem = ItemType.KeycardContainmentEngineer, Description = "Spawns a Turret", DisplayName = "Turret", Items = [ItemType.GunCrossvec], Static = true });
+            CustomItemManager.RegisterItem("FLASHTRAP", new TrapCard<FlashbangTrap>() { BaseItem = ItemType.KeycardScientist, Description = "Spawns a Flashbang Trap", DisplayName = "Flashbang Trap", Offset = Vector3.down * 1.4f, Health = 400f, Range = 5f, Cooldown = 10f });
             CustomItemManager.RegisterItem("LANDMINE", new TrapCard<Landmine>() { BaseItem = ItemType.KeycardZoneManager, Description = "Spawns a Landmine", DisplayName = "Landmine", Health = -1f, Range = 3f, ToySize = new(0.25f, 1.2f, 0.25f), ToyColor = Color.green });
 
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN1".GetCustomItemWithID(), ID = "ALLY1", Price = 500 });
@@ -55,6 +56,7 @@ namespace SwiftZombies
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN3".GetCustomItemWithID(), ID = "ALLY3", Price = 2000 });
             shop.AddItem(new CustomShopItem() { Item = "GUNMAN4".GetCustomItemWithID(), ID = "ALLY4", Price = 3000 });
             shop.AddItem(new CustomShopItem() { Item = "FLASHMAN".GetCustomItemWithID(), ID = "ALLYFLASH", Price = 1500 });
+            shop.AddItem(new CustomShopItem() { Item = "TURRET".GetCustomItemWithID(), ID = "ALLYTURRET", Price = 1600 });
             shop.AddItem(new CustomShopItem() { Item = "FLASHTRAP".GetCustomItemWithID(), ID = "TRAPFLASH", Price = 1000 });
             shop.AddItem(new CustomShopItem() { Item = "LANDMINE".GetCustomItemWithID(), ID = "LANDMINE", Price = 700 });
 

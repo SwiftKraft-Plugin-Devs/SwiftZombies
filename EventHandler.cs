@@ -37,6 +37,14 @@ namespace SwiftZombies
         public static readonly Dictionary<ShopItem, ItemType> WorldShopItems = [];
         public static RoomIdentifier SpawnRoom;
 
+        public static RoomName[] LockRooms = [
+            RoomName.Lcz330,
+            RoomName.Lcz173,
+            RoomName.LczArmory,
+            RoomName.LczGlassroom,
+            RoomName.LczComputerRoom
+            ];
+
         public static readonly List<ItemType> Drops =
         [
             ItemType.Ammo9x19,
@@ -101,7 +109,7 @@ namespace SwiftZombies
         public void PlayerDeath(PlayerDeathEvent _event)
         {
             List<Player> players = Player.GetPlayers();
-            int i = players.Count((p) => p.Role.GetFaction() == Faction.FoundationEnemy);
+            int i = players.Count((p) => p.Role == RoleTypeId.ClassD);
             Log.Info(i + " humans remaining! ");
             if (i <= 0 && !RoundRestart.IsRoundRestarting)
                 GameRunner.Lose();
@@ -219,14 +227,6 @@ namespace SwiftZombies
                 RoomName.LczCheckpointB
             ];
 
-            RoomName[] lockRooms = [
-                RoomName.Lcz330,
-                RoomName.Lcz173,
-                RoomName.LczArmory,
-                RoomName.LczGlassroom,
-                RoomName.LczComputerRoom
-            ];
-
             List<ShopItem> temp = [.. WorldShopItems.Keys];
 
             RoomIdentifier dClassCells = null;
@@ -250,7 +250,7 @@ namespace SwiftZombies
                         if (door is BreakableDoor)
                             new BlockableEntry(door).Block();
                 }
-                else if (lockRooms.Contains(room.Name))
+                else if (LockRooms.Contains(room.Name))
                 {
                     foreach (DoorVariant door in DoorVariant.DoorsByRoom[room])
                     {

@@ -78,6 +78,9 @@ namespace SwiftZombies.Core
 
                 AI.Add(Profile.RandomItem().Spawn(EventHandler.SpawnLocations.RandomItem()).Player);
                 yield return Timing.WaitForSeconds(Random.Range(DelayMin, DelayMax));
+                foreach (Player prof in AI)
+                    if (EventHandler.LockRooms.Contains(prof.Room.Name))
+                        prof.Kill();
             }
         }
 

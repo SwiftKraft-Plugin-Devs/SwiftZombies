@@ -6,6 +6,7 @@ using PlayerRoles;
 using PlayerRoles.Ragdolls;
 using PluginAPI.Core;
 using RoundRestarting;
+using SwiftNPCs.Core.Management;
 using SwiftShops.API;
 using System.Collections.Generic;
 
@@ -84,7 +85,7 @@ namespace SwiftZombies.Core
                 List<Player> players = Player.GetPlayers();
                 foreach (Player p in players)
                 {
-                    if (!p.IsAlive)
+                    if (!p.IsAI() && !p.IsAlive)
                     {
                         p.SetRole(RoleTypeId.ClassD);
                         EventHandler.SetupPlayer(p);
